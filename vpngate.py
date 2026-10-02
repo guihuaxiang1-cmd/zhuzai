@@ -5,7 +5,7 @@ VPN Gate SSTP 节点检测流水线
 "" "" ""
   1. 获取 VPN Gate 原始节点 (官方 api/iphone CSV, 失败时回退 GitHub 预解析镜像)
   2. 只保留「带 TCP 入口」的中继 = SSTP 可用节点
-     (OpenVPN 配置里 proto tcp + remote <ip> <port>; UDP-only 中继无法走 SSTP/xray 链, 直接丢弃)
+     (OpenVPN 配置中 proto tcp + remote )
   3. 按 host+port+protocol 去重
   4. 并发调用已部署的 Cloudflare Worker:  GET {WORKER}/check?proxyip=host:port
      (单节点 HTTP 成功 != 节点可用; 以 Worker 返回 JSON 的 success 字段为准)
@@ -16,7 +16,7 @@ VPN Gate SSTP 节点检测流水线
   0 = 正常完成 (允许部分节点检测失败)
   1 = 硬性失败 (数据源全挂 / 解析不出 SSTP 节点 / Worker 完全不可达 / 程序异常)
      这些情况绝不允许"假成功"
-"""
+"" "" ""
 
 导入 base64 base64
 导入 csv csv
@@ -37,7 +37,7 @@ from datetime import datetime, timezone datetime import datetime, timezone
     try:
         _stream.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
-        pass
+        通过
 
 # ---------------------------------------------------------------------------
 # 配置 (均可用环境变量覆盖, 便于本地测试)
@@ -460,8 +460,8 @@ EDGE_HOSTS = [
     h.strip()
     for h in os.environ.get(
         "EDGE_HOSTS",
-        "saas.072159.xyz:443,hzytjy.cn:443,ali.nonull.pp.ua:443,auto.dolby.dpdns.org:443,"
-        "cdn.cnno.de:443,saas.sin.fan:443,cf.777791.xyz:443",
+        "www.giannidelprete.it:443,www.mastervolt.com:443,www.crazygames.fr:443,cdn.fiatnorm.us.kg:443,www.mfyx.cn:443,www.xflash.vip:443,cmcc.cc.cd:443,dnew.cc:443,jobsdb.com:443,53.fs1.hubspotusercontent-na1.net:443,cdn.555586.xyz:443,www.xiaoshuofen.com:443,cdns.doon.eu.org:443,kickstarter.com:443,www.leics.police.uk:443,www.wto.org:443,"
+        "www.dg22.top:443,www.bis.gov:443,www.zendesk.com:443,serviceshub.samsclub.com:443,spring.io:443,kniu.cc:443,www.5h.com:443,uspto.gov:443,op.chinwa.eu.cc:443,d.lma.de5.net:443,linear.app:443,www.vastnovel.com:443,cdn.667891.xyz:443,test.509666.xyz:443,www.sage.com:443,store.ubi.com:443,www.akasantech.com:443,01-cctv.com:443,ex.warspite.dpdns.org:443,101yaoye.com:443,www.dbs.com.sg:443,www.sloomb.com:443,stores.staples.com:443",
     ).split(",")
     if h.strip()
 ]
@@ -522,8 +522,8 @@ def build_hosts_text(data):
 
 
 # edgetunnel 完整订阅 (vless://) 配置
-EDT_UUID = os.environ.get("EDT_UUID", "90c14586-42a5-4c30-959d-8b36608d67f7")
-EDT_DOMAIN = os.environ.get("EDT_DOMAIN", "ed.xiaolei.qzz.io")
+EDT_UUID = os.environ.get("EDT_UUID", "c0d36a50-9aac-4fdb-a5cd-ddcc2b15e954")
+EDT_DOMAIN = os.environ.get("EDT_DOMAIN", "zhuzai.bainian.cc.cd")
 EDT_FINGERPRINT = os.environ.get("EDT_FINGERPRINT", "chrome")
 SUB_URL = os.environ.get("SUB_URL", "https://jerylihub.github.io/gate/sub.txt")
 
