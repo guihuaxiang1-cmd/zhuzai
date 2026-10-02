@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""
+"" "" ""
 VPN Gate SSTP 节点检测流水线
-============================
-流程:
+     这些情况绝不允许“假成功”
+"" "" ""
   1. 获取 VPN Gate 原始节点 (官方 api/iphone CSV, 失败时回退 GitHub 预解析镜像)
   2. 只保留「带 TCP 入口」的中继 = SSTP 可用节点
      (OpenVPN 配置里 proto tcp + remote <ip> <port>; UDP-only 中继无法走 SSTP/xray 链, 直接丢弃)
@@ -18,22 +18,22 @@ VPN Gate SSTP 节点检测流水线
      这些情况绝不允许"假成功"
 """
 
-import base64
-import csv
-import io
-import json
-import os
-import re
-import sys
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
-from urllib.parse import quote
+导入 base64 base64
+导入 csv csv
+导入 io io
+导入 json json
+导入 os os
+导入 re re
+导入 sys sys
+导入时间 time
+from concurrent.futures import ThreadPoolExecutor, as_completed concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone datetime import datetime, timezone
+从 urllib.parse 导入 quote urllib.parse import quote
 
-import requests
+导入 requests requests
 
-# 保证日志在任何控制台编码下都能输出 (Windows GBK 控制台不会崩)
-for _stream in (sys.stdout, sys.stderr):
+# 保证日志在任何控制台编码下都能输出 (Windows GBK 控制台不会崩溃)
+对于 _stream 在 (sys.stdout, sys.stderr) 中： _stream in (sys.stdout, sys.stderr):
     try:
         _stream.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
@@ -51,7 +51,7 @@ VPNGATE_MIRROR = os.environ.get(
     "https://raw.githubusercontent.com/fdciabdul/Vpngate-Scraper-API/main/json/data.json",
 )
 # 已部署的 Cloudflare Worker 检测接口 (GET /check?proxyip=host:port, 实测确认)
-WORKER_CHECK_URL = os.environ.get("CHECK_WORKER", "https://check.helei.kdns.fr/check?sstp=vpn:vpn@")
+WORKER_CHECK_URL = os.environ.get("CHECK_WORKER", "https://zz.bainian.cc.cd/check?sstp=vpn:vpn@")
 CONCURRENCY = max(1, int(os.environ.get("CHECK_CONCURRENCY", "32")))   # 与 Worker 网页端一致的并发模型
 CHECK_TIMEOUT = float(os.environ.get("CHECK_TIMEOUT", "90"))          # 单请求客户端超时 (秒)
 MAX_CHECK_NODES = int(os.environ.get("MAX_CHECK_NODES", "0"))         # 0=不限; 本地测试可设小值
